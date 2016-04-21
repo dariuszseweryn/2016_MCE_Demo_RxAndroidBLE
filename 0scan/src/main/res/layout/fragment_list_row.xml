@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.polidea.rxandroidbledemoscanning.ListRow xmlns:android="http://schemas.android.com/apk/res/android"
+                                              xmlns:tools="http://schemas.android.com/tools"
+                                              android:orientation="horizontal"
+                                              android:padding="10dp"
+                                              android:minHeight="30dp"
+                                              android:layout_width="match_parent"
+                                              android:layout_height="100dp">
+
+    <TextView
+            tools:text="XX:XX:XX:XX:XX(name)"
+            android:id="@+id/mac_name"
+            android:layout_weight="2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+
+    <TextView
+            tools:text="90"
+            android:id="@+id/rssi"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+
+    <TextView
+            tools:text="10 s"
+            android:id="@+id/last_seen"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+</com.polidea.rxandroidbledemoscanning.ListRow>
