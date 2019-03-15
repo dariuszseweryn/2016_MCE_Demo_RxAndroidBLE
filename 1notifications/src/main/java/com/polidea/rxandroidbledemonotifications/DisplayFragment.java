@@ -1,13 +1,14 @@
 package com.polidea.rxandroidbledemonotifications;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import com.polidea.rxandroidble.RxBleConnection;
+import com.polidea.rxandroidble2.RxBleConnection;
 
 public class DisplayFragment extends Fragment {
 
@@ -16,15 +17,15 @@ public class DisplayFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_display, container, false);
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        statusTextView = (TextView) view.findViewById(R.id.status);
-        accelerometerDataView = (AccelerometerDataView) view.findViewById(R.id.accelerometer_view);
+        statusTextView = view.findViewById(R.id.status);
+        accelerometerDataView = view.findViewById(R.id.accelerometer_view);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.polidea.rxandroidbledemoscanning;
 
-import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -9,31 +9,31 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
-import com.polidea.rxandroidble.RxBleDevice;
-import com.polidea.rxandroidble.RxBleScanResult;
+import com.polidea.rxandroidble2.RxBleDevice;
+import com.polidea.rxandroidble2.scan.ScanResult;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
-import rx.Observable;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 
 public class ListFragment extends Fragment {
 
     private final ArrayList<RxBleDevice> keysList = new ArrayList<>();
     private final LinkedHashMap<RxBleDevice, Model> results = new LinkedHashMap<>();
     private ListView listView;
-    private Subscription refreshListSubscription;
+    private Disposable refreshListDisposable;
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return new ListView(inflater.getContext());
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         listView = (ListView) view;
         listView.setAdapter(adapter);
@@ -49,26 +49,19 @@ public class ListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        refreshListSubscription = Observable.interval(1, TimeUnit.SECONDS)
+        refreshListDisposable = Observable.interval(1, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        new Action1<Long>() {
-                            @Override
-                            public void call(Long aLong) {
-                                adapter.notifyDataSetChanged();
-                            }
-                        }
-                );
+                .subscribe(aLong -> adapter.notifyDataSetChanged());
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        refreshListSubscription.unsubscribe();
-        refreshListSubscription = null;
+        refreshListDisposable.dispose();
+        refreshListDisposable = null;
     }
 
-    public void put(RxBleScanResult scanResult) {
+    public void put(ScanResult scanResult) {
         final RxBleDevice bleDevice = scanResult.getBleDevice();
         Model model = results.get(bleDevice);
         if (model == null) {
@@ -125,6 +118,6 @@ public class ListFragment extends Fragment {
 
     private String lastSeenText(long lastSeenTimestamp) {
         final long difference = System.currentTimeMillis() - lastSeenTimestamp;
-        return String.format("%d s", TimeUnit.MILLISECONDS.toSeconds(difference));
+        return String.format(Locale.getDefault(), "%d s", TimeUnit.MILLISECONDS.toSeconds(difference));
     }
 }

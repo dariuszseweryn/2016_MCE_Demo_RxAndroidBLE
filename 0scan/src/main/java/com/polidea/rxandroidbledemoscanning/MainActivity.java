@@ -1,29 +1,21 @@
 package com.polidea.rxandroidbledemoscanning;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
-import com.polidea.rxandroidble.RxBleClient;
-import com.polidea.rxandroidble.RxBleScanResult;
-import com.polidea.rxandroidble.internal.RxBleLog;
-import com.polidea.rxandroidble.internal.util.UUIDUtil;
-import java.util.ArrayList;
-import java.util.List;
+import com.polidea.rxandroidble2.RxBleClient;
+import com.polidea.rxandroidble2.scan.ScanSettings;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import java.util.UUID;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final UUID FILTERING_SERVICE_UUID = UUID.fromString("a59bfff0-6343-4053-a67c-357cc7f8f1a9");
+
     private RxBleClient rxBleClient;
 
-    private Subscription scanSubscription;
+    private Disposable scanDisposable;
 
     ListFragment listFragment;
 
@@ -41,7 +33,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        scanSubscription = rxBleClient.scanBleDevices()
+        scanDisposable = rxBleClient.scanBleDevices(
+                new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build()
+        )
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         rxBleScanResult -> listFragment.put(rxBleScanResult),
@@ -52,9 +46,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if (scanSubscription != null) {
-            scanSubscription.unsubscribe();
-            scanSubscription = null;
+        if (scanDisposable != null) {
+            scanDisposable.dispose();
+            scanDisposable = null;
         }
     }
 }
